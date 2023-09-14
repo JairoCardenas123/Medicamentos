@@ -64,7 +64,7 @@ router.get('/ejercicio3', async(req,res)=>{
         await client.connect();
         const db = client.db('farmaciaCampus');
         const collection = db.collection('Medicamentos');
-        const result = await collection.find({proveedor:'ProveedorA'})
+        const result = await collection.find({'proveedor.nombre': 'ProveedorA'}).toArray()
         client.close()
         res.json(result)
     } catch (error) {
@@ -74,20 +74,20 @@ router.get('/ejercicio3', async(req,res)=>{
 
 //Obtener recetas médicas emitidas después del 1 de enero de 2023.
 
-router.get('/ejercicio4', async (req,res)=>{
+router.get('/ejercicio4', async (req, res) => {
     try {
-        const Date = new Date('01-01-2023')
-    const client = new MongoClient(bases)
-    await client.connect();
-    const db = client.db('farmaciaCampus')
-    const collection = db.collection('Ventas')
-    const result = await collection.find({fechaVenta:{$lt:Date}}.toArray())
-    client.close()
-    res.json(result)
+        const fechaLimite = new Date('2022-01-01');
+        const client = new MongoClient(bases);
+        await client.connect();
+        const db = client.db('farmaciaCampus');
+        const collection = db.collection('Recetas');
+        const result = await collection.find({'fechaEmision':{$gt:fechaLimite}}).toArray();
+        client.close();
+        res.json(result);
     } catch (error) {
-        res.status(404).json('No se encontro la recetas')
+        res.status(404).json('No se encontraron recetas médicas emitidas después del 1 de enero de 2023');
     }
-    
-})
+});
+
 
 module.exports = router;
